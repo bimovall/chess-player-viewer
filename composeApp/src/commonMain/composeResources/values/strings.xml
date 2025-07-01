@@ -1,0 +1,7 @@
+<resources>
+    <string name="title">Chess Player Viewer</string>
+    <string name="leaderboard">Leaderboard</string>
+    <string name="titled_player">Titled Player</string>
+    <string name="streamer">Streamer</string>
+    <string name="recently_viewed">Recently Viewed</string>
+</resources>
