@@ -31,7 +31,7 @@ fun RecentlyViewedItem(title: String, name: String, modifier: Modifier = Modifie
         border = BorderStroke(1.dp, BorderItemColor),
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
-        ),c
+        ),
         modifier = modifier.fillMaxWidth()
     ) {
         Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
