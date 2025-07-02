@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,9 +42,14 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(
+    onClickTitledPlayer: () -> Unit,
+    onClickLeaderboard: () -> Unit,
+    onClickStreamer: () -> Unit,
+    modifier: Modifier = Modifier
+) {
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.fillMaxHeight()) {
         Text(
             text = stringResource(Res.string.title),
             style = MaterialTheme.typography.titleLarge.copy(),
@@ -51,15 +57,9 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         )
 
         MenuGrid(
-            onClickTitledPlayer = {
-
-            },
-            onClickLeaderboard = {
-
-            },
-            onClickStreamer = {
-
-            }
+            onClickTitledPlayer = onClickTitledPlayer,
+            onClickLeaderboard = onClickLeaderboard,
+            onClickStreamer = onClickStreamer
         )
 
         Text(
