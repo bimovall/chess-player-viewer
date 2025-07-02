@@ -15,6 +15,7 @@ object Color {
 
     val BadgeColor = Color(0xFF9E0104)
     val BorderItemColor = Color(0xFFDBDBDB)
+    val BgLeaderboardItemColor = Color(0xFFDDCEFE)
 
 
 }

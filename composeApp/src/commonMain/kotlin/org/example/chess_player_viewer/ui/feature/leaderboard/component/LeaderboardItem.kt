@@ -1,7 +1,7 @@
-package org.example.chess_player_viewer.ui.feature.home.component
+package org.example.chess_player_viewer.ui.feature.leaderboard.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,18 +23,30 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import org.example.chess_player_viewer.ui.component.BadgeItem
-import org.example.chess_player_viewer.ui.style.Color.BorderItemColor
+import org.example.chess_player_viewer.ui.style.Color.BgLeaderboardItemColor
+
 
 @Composable
-fun RecentlyViewedItem(title: String, name: String, modifier: Modifier = Modifier) {
+fun LeaderboardItem(
+    number: Int,
+    title: String,
+    name: String,
+    rating: Int,
+    modifier: Modifier = Modifier
+) {
     Card(
-        border = BorderStroke(1.dp, BorderItemColor),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White,
+            containerColor = BgLeaderboardItemColor,
         ),
         modifier = modifier.fillMaxWidth()
     ) {
         Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+            Text(
+                "$number",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(start = 8.dp).align(Alignment.CenterVertically)
+            )
+
             AsyncImage(
                 model = ImageRequest.Builder(LocalPlatformContext.current)
                     .data("https://cdn.antaranews.com/cache/1200x800/2023/06/18/20230618_080945.jpg")
@@ -42,7 +54,7 @@ fun RecentlyViewedItem(title: String, name: String, modifier: Modifier = Modifie
                     .build(),
                 contentDescription = "avatar",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.padding(end = 16.dp).height(36.dp).width(36.dp)
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp).height(36.dp).width(36.dp)
                     .clip(CircleShape),
 
                 )
@@ -52,7 +64,14 @@ fun RecentlyViewedItem(title: String, name: String, modifier: Modifier = Modifie
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(start = 8.dp).align(Alignment.CenterVertically)
             )
-
+            Spacer(Modifier.weight(1f))
+            Text(
+                text = rating.toString(),
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = Color.Black.copy(alpha = 0.5f)
+                ),
+                modifier = Modifier.padding(start = 8.dp).align(Alignment.CenterVertically)
+            )
 
         }
     }
