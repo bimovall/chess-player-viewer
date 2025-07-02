@@ -50,10 +50,10 @@ fun LeaderboardScreen(modifier: Modifier = Modifier) {
 
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 24.dp)
-                .offset(y = -overlapOffset)
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp)
+
         ) {
-            items(count = 6) {
+            items(count = 12) {
                 LeaderboardItem(1, "WGM", "Hikaru", 2021)
             }
         }
