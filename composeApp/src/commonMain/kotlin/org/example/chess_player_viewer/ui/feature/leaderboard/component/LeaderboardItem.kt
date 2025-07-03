@@ -32,13 +32,15 @@ fun LeaderboardItem(
     title: String,
     name: String,
     rating: Int,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = BgLeaderboardItemColor,
         ),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        onClick = onClick
     ) {
         Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             Text(

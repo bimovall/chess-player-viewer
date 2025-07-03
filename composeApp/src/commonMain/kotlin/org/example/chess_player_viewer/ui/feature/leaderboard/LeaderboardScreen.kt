@@ -37,9 +37,13 @@ import org.example.chess_player_viewer.ui.feature.leaderboard.component.PodiumAv
 import org.example.chess_player_viewer.ui.feature.leaderboard.component.PodiumIdentity
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
-fun LeaderboardScreen(modifier: Modifier = Modifier) {
+fun LeaderboardScreen(
+    modifier: Modifier = Modifier,
+    viewModel: LeaderboardViewModel = koinInject()
+) {
     val headerHeightDp by remember { mutableStateOf(200.dp) }
     val overlapFraction = 0.1f
     val overlapOffset = with(LocalDensity.current) { (headerHeightDp * overlapFraction).toPx() }.dp
@@ -54,7 +58,9 @@ fun LeaderboardScreen(modifier: Modifier = Modifier) {
 
         ) {
             items(count = 12) {
-                LeaderboardItem(1, "WGM", "Hikaru", 2021)
+                LeaderboardItem(1, "WGM", "Hikaru", 2021, onClick = {
+                    viewModel.test()
+                })
             }
         }
     }
