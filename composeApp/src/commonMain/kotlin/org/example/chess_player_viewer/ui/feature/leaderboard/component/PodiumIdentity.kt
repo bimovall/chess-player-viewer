@@ -14,17 +14,19 @@ import androidx.compose.ui.unit.sp
 import org.example.chess_player_viewer.ui.component.BadgeItem
 
 @Composable
-fun PodiumIdentity() {
+fun PodiumIdentity(rating: String, title: String, name: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            "2065", style = MaterialTheme.typography.bodyMedium.copy(
+            rating, style = MaterialTheme.typography.bodyMedium.copy(
                 fontSize = 14.sp
             ), modifier = Modifier.padding(top = 8.dp)
         )
         Row {
-            BadgeItem("GM", modifier = Modifier.align(Alignment.CenterVertically))
+            if (title.isNotBlank()) {
+                BadgeItem(title, modifier = Modifier.align(Alignment.CenterVertically))
+            }
             Text(
-                "Hikaru",
+                name,
                 style = MaterialTheme.typography.bodyMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

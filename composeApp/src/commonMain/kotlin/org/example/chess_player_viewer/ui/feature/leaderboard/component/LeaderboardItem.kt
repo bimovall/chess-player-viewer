@@ -1,7 +1,6 @@
 package org.example.chess_player_viewer.ui.feature.leaderboard.component
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,6 +31,7 @@ fun LeaderboardItem(
     title: String,
     name: String,
     rating: Int,
+    avatar: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -51,7 +51,7 @@ fun LeaderboardItem(
 
             AsyncImage(
                 model = ImageRequest.Builder(LocalPlatformContext.current)
-                    .data("https://cdn.antaranews.com/cache/1200x800/2023/06/18/20230618_080945.jpg")
+                    .data(avatar)
                     .crossfade(true)
                     .build(),
                 contentDescription = "avatar",
@@ -60,13 +60,16 @@ fun LeaderboardItem(
                     .clip(CircleShape),
 
                 )
-            BadgeItem(title, modifier = Modifier.align(Alignment.CenterVertically))
+            if (title.isNotBlank()) {
+                BadgeItem(title, modifier = Modifier.align(Alignment.CenterVertically))
+            }
             Text(
                 name,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(start = 8.dp).align(Alignment.CenterVertically)
+                    .weight(1f)
             )
-            Spacer(Modifier.weight(1f))
+
             Text(
                 text = rating.toString(),
                 style = MaterialTheme.typography.bodySmall.copy(

@@ -5,7 +5,7 @@ import org.koin.dsl.KoinConfiguration
 import org.koin.dsl.includes
 
 
-val appModule = listOf(provideHttpClient, provideDataSourceModule, viewModelModule)
+val appModule = listOf(provideHttpClient, provideDataSourceModule, viewModelModule, provideDomainModule)
 
 fun initKoin(config: KoinConfiguration? = null) {
     startKoin {

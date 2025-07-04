@@ -17,5 +17,8 @@ object Color {
     val BorderItemColor = Color(0xFFDBDBDB)
     val BgLeaderboardItemColor = Color(0xFFDDCEFE)
 
+    val GoldWinnerColor = Color(0xFFFFD310)
+    val SilverWinnerColor = Color(0xFFE0E0E0)
+    val BronzeWinnerColor = Color(0xFFFFC58E)
 
 }

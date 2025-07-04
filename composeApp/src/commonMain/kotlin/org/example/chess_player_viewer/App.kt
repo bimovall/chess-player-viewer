@@ -46,7 +46,11 @@ fun App() {
                     )
                 }
                 composable<Leaderboard> {
-                    LeaderboardScreen()
+                    LeaderboardScreen(
+                        onBackPressed = {
+                            navHostController.popBackStack()
+                        }
+                    )
                 }
             }
         }

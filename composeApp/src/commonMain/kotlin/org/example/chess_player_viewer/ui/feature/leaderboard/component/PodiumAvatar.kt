@@ -23,20 +23,34 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import org.example.chess_player_viewer.ui.style.Color.BronzeWinnerColor
+import org.example.chess_player_viewer.ui.style.Color.GoldWinnerColor
+import org.example.chess_player_viewer.ui.style.Color.SilverWinnerColor
 
 @Composable
-fun PodiumAvatar(modifier: Modifier = Modifier) {
+fun PodiumAvatar(number: Int, avatar: String, modifier: Modifier = Modifier) {
+    val color = when (number) {
+        1 -> {
+            GoldWinnerColor
+        }
+        2 -> {
+            SilverWinnerColor
+        }
+        else -> {
+            BronzeWinnerColor
+        }
+    }
     Box(modifier = modifier) {
         AsyncImage(
             model = ImageRequest.Builder(LocalPlatformContext.current)
-                .data("https://cdn.antaranews.com/cache/1200x800/2023/06/18/20230618_080945.jpg")
+                .data(avatar)
                 .crossfade(true)
                 .build(),
             contentDescription = "avatar",
             contentScale = ContentScale.Crop,
             modifier = Modifier.height(80.dp).width(80.dp)
                 .clip(CircleShape)
-                .border(border = BorderStroke(1.dp, Color.Red), shape = CircleShape),
+                .border(border = BorderStroke(1.dp, color), shape = CircleShape),
 
             )
 
@@ -45,10 +59,10 @@ fun PodiumAvatar(modifier: Modifier = Modifier) {
                 .size(16.dp)
                 .offset(y = 6.dp)
                 .clip(CircleShape)
-                .background(Color.Red)
+                .background(color)
         ) {
             Text(
-                "1", style = MaterialTheme.typography.labelSmall.copy(
+                "$number", style = MaterialTheme.typography.labelSmall.copy(
                     color = Color.White,
                     fontSize = 12.sp
                 ), modifier = Modifier.align(Alignment.Center)
