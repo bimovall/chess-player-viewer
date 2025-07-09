@@ -7,7 +7,6 @@ sealed interface Result<out T> {
 }
 
 inline fun <T, R> Result<T>.mapSuccess(transform: (T) -> R): Result<R> {
-    println("CHeck this : $this")
     return when (this) {
         is Result.Success -> try {
             Result.Success(transform(data))

@@ -17,7 +17,7 @@ fun BadgeItem(title: String, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier.background(
             color = BadgeColor,
-            shape = RoundedCornerShape(8.dp)
+            shape = RoundedCornerShape(4.dp)
         )
     ) {
         Text(

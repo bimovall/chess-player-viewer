@@ -1,12 +1,18 @@
 package org.example.chess_player_viewer.ui.navigation
 
 import kotlinx.serialization.Serializable
+import kotlin.reflect.KClass
 
 @Serializable
-object Home
+object HomeRoute
 
 @Serializable
-object Leaderboard
+object LeaderboardRoute
 
 @Serializable
-data class DetailProfile(val username: String)
+data class ProfileRoute(val username: String)
+
+fun String?.matchesRoute(routeClass: KClass<*>): Boolean {
+    val prefix = routeClass.qualifiedName
+    return this != null && prefix != null && this.startsWith(prefix)
+}
