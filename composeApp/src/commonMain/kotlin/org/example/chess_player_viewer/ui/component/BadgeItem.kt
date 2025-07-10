@@ -14,6 +14,7 @@ import org.example.chess_player_viewer.ui.style.Color.BadgeColor
 
 @Composable
 fun BadgeItem(title: String, modifier: Modifier = Modifier) {
+    if (title.isBlank()) return
     Box(
         modifier = modifier.background(
             color = BadgeColor,

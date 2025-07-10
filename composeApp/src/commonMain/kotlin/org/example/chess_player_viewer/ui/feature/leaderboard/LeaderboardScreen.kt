@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -35,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import chessplayerviewer.composeapp.generated.resources.Res
@@ -49,18 +51,26 @@ import org.example.chess_player_viewer.ui.feature.leaderboard.component.PodiumId
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LeaderboardScreen(
     modifier: Modifier = Modifier,
-    viewModel: LeaderboardViewModel = koinInject(),
-    onBackPressed: () -> Unit
+    viewModel: LeaderboardViewModel = koinViewModel(),
+    onBackPressed: () -> Unit,
+    onProfileClicked: (username: String) -> Unit
 ) {
     val headerHeightDp by remember { mutableStateOf(200.dp) }
     val overlapFraction = 0.1f
-    val overlapOffset = with(LocalDensity.current) { (headerHeightDp * overlapFraction).toPx() }.dp
+    val overlapOffset = remember(headerHeightDp) {
+        headerHeightDp * overlapFraction
+    }
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     val scrollState = rememberLazyListState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getLeaderboards()
+    }
 
     Column(modifier = modifier) {
         TopSection(modifier = Modifier.height(headerHeightDp), uiState,
@@ -95,42 +105,64 @@ fun LeaderboardScreen(
             }
 
             is LeaderboardUiState.Success -> {
-                val items = state.leaderboards.data
-                val error = state.error
 
-                LaunchedEffect(error) {
-                    if (error != null) {
-                        //TODO show snackbar or toast
-                        println("show error snackbar")
-                    }
-                }
-                LaunchedEffect(key1 = state.selectedFilter) {
-                    scrollState.requestScrollToItem(0)
-                }
-
-                LeaderboardAvatar(modifier = Modifier.offset(y = -overlapOffset), state)
-
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp),
-                    state = scrollState
-
-                ) {
-                    itemsIndexed(items[state.selectedFilter] ?: listOf(), key = { index, item ->
-                        item.id
-                    }) { index, item ->
-                        LeaderboardItem(
-                            index + 1,
-                            item.title,
-                            item.name.ifBlank { item.username },
-                            item.score,
-                            avatar = item.avatar,
-                            onClick = {
-
-                            })
-                    }
-                }
+                SuccessContent(
+                    state = state,
+                    overlapOffset = overlapOffset,
+                    scrollState = scrollState,
+                    onProfileClicked = onProfileClicked
+                )
             }
+        }
+    }
+}
+
+@Composable
+private fun SuccessContent(
+    state: LeaderboardUiState.Success,
+    overlapOffset: Dp,
+    scrollState: LazyListState,
+    onProfileClicked: (String) -> Unit
+) {
+    val error = state.error
+    val selectedItems = remember(state.leaderboards.data, state.selectedFilter) {
+        state.leaderboards.data[state.selectedFilter] ?: emptyList()
+    }
+
+    LaunchedEffect(error) {
+        if (error != null) {
+            //TODO show snackbar or toast
+            println("show error snackbar")
+        }
+    }
+
+    LaunchedEffect(state.selectedFilter) {
+        scrollState.requestScrollToItem(0)
+    }
+
+    LeaderboardAvatar(
+        modifier = Modifier.offset(y = -overlapOffset),
+        state = state
+    )
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.padding(horizontal = 8.dp),
+        state = scrollState
+    ) {
+        itemsIndexed(
+            items = selectedItems,
+            key = { _, item -> item.id }
+        ) { index, item ->
+            LeaderboardItem(
+                index + 1,
+                item.title,
+                item.name.ifBlank { item.username },
+                item.score,
+                avatar = item.avatar,
+                onClick = {
+                    onProfileClicked(item.username)
+                })
         }
     }
 }

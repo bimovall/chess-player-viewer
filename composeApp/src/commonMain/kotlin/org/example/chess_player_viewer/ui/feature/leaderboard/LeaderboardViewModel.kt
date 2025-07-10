@@ -14,12 +14,11 @@ class LeaderboardViewModel(val getLeaderboardUseCase: GetLeaderboardUseCase) : V
     private var _uiState = MutableStateFlow<LeaderboardUiState>(LeaderboardUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
-    init {
-        //TODO move to compose to avoid early calls in Unit Test
-        getLeaderboards()
-    }
+    private var leaderboardHasCalled = false
 
-    private fun getLeaderboards(filter: String = "daily") {
+    fun getLeaderboards(filter: String = "daily") {
+        if (leaderboardHasCalled) return
+        leaderboardHasCalled = true
         viewModelScope.launch {
             getLeaderboardUseCase().collect { result ->
                 _uiState.update { old ->

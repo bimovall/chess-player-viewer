@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,23 +39,32 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import chessplayerviewer.composeapp.generated.resources.Res
 import chessplayerviewer.composeapp.generated.resources.ic_location
 import chessplayerviewer.composeapp.generated.resources.ic_selected
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.format.MonthNames
+import org.example.chess_player_viewer.domain.model.PlayerStats
+import org.example.chess_player_viewer.domain.model.Profile
 import org.example.chess_player_viewer.ui.component.Avatar
 import org.example.chess_player_viewer.ui.component.BadgeItem
+import org.example.chess_player_viewer.utils.DateUtils
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProfileScreen(
+    viewModel: ProfileViewModel = koinViewModel(),
+    username: String,
     onCollapsedFractionChanged: (Float) -> Unit,
     onNameAdded: (String) -> Unit,
     onAvatarAdded: (String) -> Unit,
 ) {
     val listState = rememberLazyListState()
-
     var headerHeightPx by remember { mutableStateOf(0f) }
     val collapseFraction by remember {
         derivedStateOf {
@@ -66,43 +77,82 @@ fun ProfileScreen(
             }
         }
     }
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val uriHandler = LocalUriHandler.current
+
+    LaunchedEffect(Unit) {
+        viewModel.getProfile(username)
+    }
 
     LaunchedEffect(collapseFraction) {
         onCollapsedFractionChanged(collapseFraction)
-        //TODO temporary set to this function, move it after integrated with API
-        onNameAdded("Vall")
-        onAvatarAdded("")
     }
 
-    LazyColumn(
-        state = listState,
-        modifier = Modifier
-            .padding(horizontal = 8.dp)
-    ) {
-        item {
-            Header(
-                collapseFraction = 1f - collapseFraction,
-                modifier = Modifier.onGloballyPositioned {
-                    headerHeightPx = it.size.height.toFloat()
-                })
+    when (val state = uiState.value) {
+
+        is ProfileUiState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
         }
 
-        item {
-            Information()
+        is ProfileUiState.Success -> {
+
+            LaunchedEffect(state) {
+                onNameAdded(state.profile.name)
+                onAvatarAdded(state.profile.avatar)
+            }
+
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+            ) {
+                item {
+                    Header(
+                        profile = state.profile,
+                        collapseFraction = 1f - collapseFraction,
+                        modifier = Modifier.onGloballyPositioned {
+                            headerHeightPx = it.size.height.toFloat()
+                        })
+                }
+
+                item {
+                    Information(
+                        profile = state.profile,
+                    )
+                }
+
+                item {
+                    StreamingPlatform(
+                        profile = state.profile,
+                        onClick = {
+                            uriHandler.openUri(it)
+                        }, modifier = Modifier.padding(top = 16.dp)
+                    )
+                }
+
+                item {
+                    Statistic(state.stats, modifier = Modifier.padding(top = 16.dp))
+                }
+            }
         }
 
-        item {
-            StreamingPlatform(modifier = Modifier.padding(top = 16.dp))
+        is ProfileUiState.PlayerStatsError -> {
+
         }
 
-        item {
-            Statistic(modifier = Modifier.padding(top = 16.dp))
+        is ProfileUiState.ProfileError -> {
+
         }
     }
 }
 
 @Composable
-fun Statistic(modifier: Modifier = Modifier) {
+fun Statistic(stats: PlayerStats?, modifier: Modifier = Modifier) {
+    if (stats == null) return
     Column(modifier = modifier.wrapContentHeight()) {
         Text("Statistic", style = MaterialTheme.typography.bodyMedium)
         FlowRow(
@@ -110,7 +160,8 @@ fun Statistic(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            repeat(15) {
+            repeat(stats.listRecord.size) { i ->
+                val record = stats.listRecord[i]
                 Box(
                     modifier = Modifier
                         .background(Color.White)
@@ -126,7 +177,7 @@ fun Statistic(modifier: Modifier = Modifier) {
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            "Bughouse",
+                            record.name,
                             style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(
                                 top = 16.dp,
@@ -136,7 +187,7 @@ fun Statistic(modifier: Modifier = Modifier) {
                             )
                         )
                         Text(
-                            "1000",
+                            record.lastRating.toString(),
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(
                                 top = 8.dp,
@@ -153,7 +204,9 @@ fun Statistic(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun StreamingPlatform(modifier: Modifier = Modifier) {
+fun StreamingPlatform(profile: Profile, onClick: (String) -> Unit, modifier: Modifier = Modifier) {
+    if (profile.streamingPlatforms.isEmpty()) return
+
     Column(modifier = modifier.wrapContentHeight()) {
         Text("Streaming Platform", style = MaterialTheme.typography.bodyMedium)
         FlowRow(
@@ -161,18 +214,20 @@ fun StreamingPlatform(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            repeat(4) {
+            repeat(profile.streamingPlatforms.size) { i ->
+                val platform = profile.streamingPlatforms[i]
                 Box(
                     modifier = Modifier
                         .background(Color.White)
                         .clip(RoundedCornerShape(8.dp))
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
-                            indication = ripple(),
+                            indication = ripple()
                         ) {
-
+                            onClick(platform.url)
                         }
                 ) {
+
                     Icon(
                         painter = painterResource(Res.drawable.ic_selected),
                         "",
@@ -185,7 +240,7 @@ fun StreamingPlatform(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun Information(modifier: Modifier = Modifier) {
+fun Information(profile: Profile, modifier: Modifier = Modifier) {
     Column(modifier = modifier.wrapContentHeight()) {
         Text("Information", style = MaterialTheme.typography.bodyMedium)
 
@@ -195,14 +250,20 @@ fun Information(modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 InformationItem(
-                    title = "Top Left",
-                    value = "Value 1",
-                    modifier = Modifier.background(Color.Yellow).fillMaxWidth().weight(1F)
+                    title = "Follower",
+                    value = profile.followers.toString(),
+                    modifier = Modifier.fillMaxWidth().weight(1F).background(Color.White)
                 )
                 InformationItem(
-                    title = "Top Right",
-                    value = "Value 2",
-                    modifier = Modifier.background(Color.Green).fillMaxWidth().weight(1F)
+                    title = "Joined",
+                    value = DateUtils.convertTimestampToDateTime(
+                        profile.joined,
+                        LocalDateTime.Format {
+                            monthName(MonthNames.ENGLISH_ABBREVIATED)
+                            chars(" ")
+                            year()
+                        }),
+                    modifier = Modifier.fillMaxWidth().weight(1F).background(Color.White)
                 )
             }
             Row(
@@ -210,14 +271,14 @@ fun Information(modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 InformationItem(
-                    title = "Bottom Left",
-                    value = "Value 3",
-                    modifier = Modifier.background(Color.Green).fillMaxWidth().weight(1F)
+                    title = "Division",
+                    value = profile.league,
+                    modifier = Modifier.fillMaxWidth().weight(1F).background(Color.White)
                 )
                 InformationItem(
-                    title = "Bottom Right",
-                    value = "Value 4",
-                    modifier = Modifier.background(Color.Yellow).fillMaxWidth().weight(1F)
+                    title = "Last Online",
+                    value = DateUtils.getDifferenceTime(profile.lastOnline),
+                    modifier = Modifier.fillMaxWidth().weight(1F).background(Color.White)
                 )
             }
         }
@@ -252,6 +313,7 @@ fun InformationItem(title: String, value: String, modifier: Modifier = Modifier)
 
 @Composable
 fun Header(
+    profile: Profile,
     collapseFraction: Float,
     modifier: Modifier = Modifier
 ) {
@@ -267,14 +329,14 @@ fun Header(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Avatar(
-            path = "",
+            path = profile.avatar,
             modifier = Modifier.size(72.dp)
         )
         PersonalInformation(
-            title = "GM",
-            name = "Vall",
-            "vall1124",
-            location = "Sydney"
+            title = profile.title,
+            name = profile.name,
+            username = profile.username,
+            location = profile.location
         )
 
 
