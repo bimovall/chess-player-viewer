@@ -6,14 +6,14 @@ import io.ktor.client.statement.HttpResponse
 
 class ApiService(private val client: HttpClient) {
     suspend fun getLeaderboard(): HttpResponse {
-        return client.get("https://api.chess.com/pub/leaderboards")
+        return client.get("leaderboards")
     }
 
     suspend fun getProfile(username: String): HttpResponse {
-        return client.get("https://api.chess.com/pub/player/$username")
+        return client.get("player/$username")
     }
 
     suspend fun getPlayerStats(username: String): HttpResponse {
-        return client.get("https://api.chess.com/pub/player/$username/stats")
+        return client.get("player/$username/stats")
     }
 }
