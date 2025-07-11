@@ -16,4 +16,8 @@ class ApiService(private val client: HttpClient) {
     suspend fun getPlayerStats(username: String): HttpResponse {
         return client.get("player/$username/stats")
     }
+
+    suspend fun getStreamers(): HttpResponse {
+        return client.get("streamers")
+    }
 }

@@ -11,8 +11,6 @@ class GetProfilePlayerStatsUseCase(private val repository: ProfileRepository) {
     operator fun invoke(username: String): Flow<ProfileWithPlayerStats> {
         return repository.getProfile(username)
             .zip(repository.getPlayerStats(username)) { profileResult, statsResult ->
-                println("Check response profile : $profileResult")
-                println("Check response stats : $profileResult")
                 ProfileWithPlayerStats(
                     profile = profileResult,
                     playerStats = statsResult

@@ -3,6 +3,7 @@ package org.example.chess_player_viewer.data.remote
 import org.example.chess_player_viewer.data.remote.dto.PlayerDto
 import org.example.chess_player_viewer.data.remote.dto.PlayerStatsDto
 import org.example.chess_player_viewer.data.remote.dto.ProfileDto
+import org.example.chess_player_viewer.data.remote.dto.StreamersDto
 import org.example.chess_player_viewer.data.service.ApiService
 import org.example.chess_player_viewer.utils.Result
 import org.example.chess_player_viewer.utils.safeApiCall
@@ -25,6 +26,12 @@ class RemoteSourceImpl(private val apiService: ApiService) :
     override suspend fun getPlayerStats(username: String): Result<PlayerStatsDto> {
         return safeApiCall {
             apiService.getPlayerStats(username)
+        }
+    }
+
+    override suspend fun getStreamers(): Result<StreamersDto> {
+        return safeApiCall {
+            apiService.getStreamers()
         }
     }
 }
