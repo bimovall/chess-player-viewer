@@ -5,6 +5,7 @@ import org.example.chess_player_viewer.data.remote.RemoteSourceImpl
 import org.example.chess_player_viewer.domain.repository.LeaderboardRepository
 import org.example.chess_player_viewer.data.repository.LeaderboardRepositoryImpl
 import org.example.chess_player_viewer.data.repository.ProfileRepositoryImpl
+import org.example.chess_player_viewer.data.service.ApiService
 import org.example.chess_player_viewer.domain.repository.ProfileRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
@@ -21,4 +22,5 @@ val provideDataSourceModule = module {
     singleOf(::ProfileRepositoryImpl) {
         bind<ProfileRepository>()
     }
+    singleOf(::ApiService)
 }

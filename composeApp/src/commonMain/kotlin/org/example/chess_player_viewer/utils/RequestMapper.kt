@@ -4,6 +4,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.isSuccess
 import io.ktor.util.network.UnresolvedAddressException
 
 
@@ -36,6 +38,32 @@ suspend inline fun <reified T> HttpClient.safeRequest(url: String): Result<T> {
             }
         } catch (e: Exception) {
             Result.Error(ErrorHandler.UnknownError(e.message.orEmpty()))
+        }
+    } catch (e: UnresolvedAddressException) {
+        Result.Error(ErrorHandler.NetworkConnection(e.message.orEmpty()))
+    } catch (e: ConnectTimeoutException) {
+        Result.Error(ErrorHandler.NetworkConnection(e.message.orEmpty()))
+    } catch (e: Exception) {
+        Result.Error(ErrorHandler.UnknownError(e.message.orEmpty()))
+    }
+}
+
+suspend inline fun <reified T> safeApiCall(
+    crossinline apiCall: suspend () -> HttpResponse
+): Result<T> {
+    return try {
+        val response = apiCall()
+        if (response.status.isSuccess()) {
+            val body = response.body<T>()
+            Result.Success(body)
+        } else {
+            val message = response.status.description
+            when (response.status.value) {
+                404 -> Result.Error(ErrorHandler.NotFound(message))
+                410 -> Result.Error(ErrorHandler.NotFound(message))
+                429 -> Result.Error(ErrorHandler.RateLimit(message))
+                else -> Result.Error(ErrorHandler.ServerError(message))
+            }
         }
     } catch (e: UnresolvedAddressException) {
         Result.Error(ErrorHandler.NetworkConnection(e.message.orEmpty()))

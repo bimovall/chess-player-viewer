@@ -2,6 +2,7 @@ package org.example.chess_player_viewer.di
 
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
@@ -25,6 +26,9 @@ val provideHttpClient = module {
                         ignoreUnknownKeys = true
                     }
                 )
+            }
+            defaultRequest {
+                url("https://api.chess.com/pub/")
             }
         }
     }
