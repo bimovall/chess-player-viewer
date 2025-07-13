@@ -13,7 +13,6 @@ class GetStreamerUseCase(private val repository: StreamerRepository) {
             .map { result ->
                 when (result) {
                     is Result.Success -> {
-                        println("Check data : ${result.data}")
                         val sortedStreamers = result.data.sortedByDescending { it.isLive }
                         Result.Success(sortedStreamers)
                     }

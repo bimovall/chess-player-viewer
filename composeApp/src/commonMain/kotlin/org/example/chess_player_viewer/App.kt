@@ -143,6 +143,9 @@ fun App() {
 
                 composable<StreamerRoute> {
                     StreamerScreen(
+                        onOpenProfile = { username ->
+                            navHostController.navigate(ProfileRoute(username))
+                        },
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
