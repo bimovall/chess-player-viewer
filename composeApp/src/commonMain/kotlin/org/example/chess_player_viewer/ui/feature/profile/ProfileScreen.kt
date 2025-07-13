@@ -155,6 +155,7 @@ fun Statistic(stats: PlayerStats?, modifier: Modifier = Modifier) {
     if (stats == null) return
     Column(modifier = modifier.wrapContentHeight()) {
         Text("Statistic", style = MaterialTheme.typography.bodyMedium)
+        Spacer(modifier = Modifier.height(8.dp))
         FlowRow(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -175,7 +176,7 @@ fun Statistic(stats: PlayerStats?, modifier: Modifier = Modifier) {
 
                         }
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         Text(
                             record.name,
                             style = MaterialTheme.typography.bodySmall,
@@ -287,7 +288,7 @@ fun Information(profile: Profile, modifier: Modifier = Modifier) {
 
 @Composable
 fun InformationItem(title: String, value: String, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             title,
             style = MaterialTheme.typography.bodySmall,
