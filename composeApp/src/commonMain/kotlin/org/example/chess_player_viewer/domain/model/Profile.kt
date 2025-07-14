@@ -1,8 +1,11 @@
 package org.example.chess_player_viewer.domain.model
 
+import kotlinx.serialization.Serializable
 import org.example.chess_player_viewer.data.remote.dto.ProfileDto
 
+@Serializable
 data class Profile(
+    val playerId: Long,
     val username: String,
     val name: String,
     val title: String,
@@ -17,6 +20,7 @@ data class Profile(
     val streamingPlatforms: List<StreamingPlatformModel> = listOf()
 
 ) {
+    @Serializable
     data class StreamingPlatformModel(
         val type: String,
         val url: String
@@ -24,6 +28,7 @@ data class Profile(
 }
 
 fun ProfileDto.mapToProfile() = Profile(
+    playerId = this.playerId ?: 0L,
     username = this.username.orEmpty(),
     name = this.name.orEmpty(),
     title = this.title.orEmpty(),

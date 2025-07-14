@@ -14,12 +14,12 @@ interface LocalSource {
         avatar: String,
         followers: Long,
         country: String,
-        lastOnline: String,
-        joined: String,
+        lastOnline: Long,
+        joined: Long,
         location: String,
         league: String,
         isStreamer: Boolean,
         streamingPlatformsJson: String,
-        lastViewedTimestamp: String,
+        lastViewedTimestamp: Long,
     )
 }

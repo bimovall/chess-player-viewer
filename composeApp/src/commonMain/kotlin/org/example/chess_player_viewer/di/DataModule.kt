@@ -17,8 +17,11 @@ import org.example.chess_player_viewer.domain.repository.StreamerRepository
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 
+@OptIn(ExperimentalTime::class)
 val provideDataSourceModule = module {
     singleOf(::RemoteSourceImpl) {
         bind<RemoteSource>()
@@ -41,4 +44,6 @@ val provideDataSourceModule = module {
     single<ChessPlayerDB> {
         ChessPlayerDB(get<SqlDriver>())
     }
+
+    single<Clock> { Clock.System }
 }

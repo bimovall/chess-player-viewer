@@ -20,13 +20,13 @@ class LocalSourceImpl(private val database: ChessPlayerDB) : LocalSource {
         avatar: String,
         followers: Long,
         country: String,
-        lastOnline: String,
-        joined: String,
+        lastOnline: Long,
+        joined: Long,
         location: String,
         league: String,
         isStreamer: Boolean,
         streamingPlatformsJson: String,
-        lastViewedTimestamp: String,
+        lastViewedTimestamp: Long,
     ) {
         database.recentlyViewedProfilesQueries.insertOrReplace(
             playerId = playerId,
@@ -36,13 +36,13 @@ class LocalSourceImpl(private val database: ChessPlayerDB) : LocalSource {
             avatar = avatar,
             followers = followers,
             country = country,
-            lastOnline = followers,
-            joined = followers,
+            lastOnline = lastOnline,
+            joined = joined,
             location = location,
             league = league,
             isStreamer = isStreamer,
-            streamingPlatformsJson = "",
-            lastViewedTimestamp = followers
+            streamingPlatformsJson = streamingPlatformsJson,
+            lastViewedTimestamp = lastViewedTimestamp
         )
     }
 }

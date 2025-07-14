@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class ProfileDto(
 
     @SerialName("avatar") var avatar: String? = null,
-    @SerialName("player_id") var playerId: Int? = null,
+    @SerialName("player_id") var playerId: Long? = null,
     @SerialName("@id") var id: String? = null,
     @SerialName("url") var url: String? = null,
     @SerialName("name") var name: String? = null,

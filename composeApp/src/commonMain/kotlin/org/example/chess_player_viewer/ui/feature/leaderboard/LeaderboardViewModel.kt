@@ -6,10 +6,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.example.chess_player_viewer.data.local.LocalSource
 import org.example.chess_player_viewer.domain.usecase.GetLeaderboardUseCase
 import org.example.chess_player_viewer.utils.Result
 
-class LeaderboardViewModel(val getLeaderboardUseCase: GetLeaderboardUseCase) : ViewModel() {
+class LeaderboardViewModel(val getLeaderboardUseCase: GetLeaderboardUseCase, private val localSource: LocalSource) : ViewModel() {
 
     private var _uiState = MutableStateFlow<LeaderboardUiState>(LeaderboardUiState.Loading)
     val uiState = _uiState.asStateFlow()
