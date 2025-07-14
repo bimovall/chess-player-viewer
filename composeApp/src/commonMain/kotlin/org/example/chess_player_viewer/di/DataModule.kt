@@ -1,5 +1,10 @@
 package org.example.chess_player_viewer.di
 
+import app.cash.sqldelight.db.SqlDriver
+import org.example.chess_player_viewer.ChessPlayerDB
+import org.example.chess_player_viewer.data.local.LocalSource
+import org.example.chess_player_viewer.data.local.LocalSourceImpl
+import org.example.chess_player_viewer.data.local.driver.DatabaseDriverFactory
 import org.example.chess_player_viewer.data.remote.RemoteSource
 import org.example.chess_player_viewer.data.remote.RemoteSourceImpl
 import org.example.chess_player_viewer.domain.repository.LeaderboardRepository
@@ -28,4 +33,12 @@ val provideDataSourceModule = module {
         bind<StreamerRepository>()
     }
     singleOf(::ApiService)
+
+    singleOf(::LocalSourceImpl) {
+        bind<LocalSource>()
+    }
+
+    single<ChessPlayerDB> {
+        ChessPlayerDB(get<SqlDriver>())
+    }
 }

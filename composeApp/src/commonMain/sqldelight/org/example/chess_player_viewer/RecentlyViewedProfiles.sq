@@ -1,0 +1,40 @@
+import kotlin.Boolean;
+
+CREATE TABLE recently_viewed_profiles (
+    playerId INTEGER NOT NULL PRIMARY KEY,
+    username TEXT UNIQUE,
+    name TEXT,
+    title TEXT,
+    avatar TEXT,
+    followers INTEGER,
+    country TEXT,
+    lastOnline INTEGER,
+    joined INTEGER,
+    location TEXT,
+    league TEXT,
+    isStreamer INTEGER AS Boolean DEFAULT 0,
+    streamingPlatformsJson TEXT,
+    lastViewedTimestamp INTEGER
+);
+
+insertOrReplace:
+INSERT OR REPLACE INTO recently_viewed_profiles (
+    playerId, username, name, title, avatar, followers, country, lastOnline,
+    joined, location, league, isStreamer, streamingPlatformsJson, lastViewedTimestamp
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+countAll:
+SELECT COUNT(*) FROM recently_viewed_profiles;
+
+trimOldest:
+DELETE FROM recently_viewed_profiles
+WHERE username IN (
+    SELECT username FROM recently_viewed_profiles
+    ORDER BY lastViewedTimestamp ASC
+    LIMIT (SELECT COUNT(*) - 15 FROM recently_viewed_profiles)
+);
+
+selectLatest15:
+SELECT * FROM recently_viewed_profiles
+ORDER BY lastViewedTimestamp DESC
+LIMIT 15;
