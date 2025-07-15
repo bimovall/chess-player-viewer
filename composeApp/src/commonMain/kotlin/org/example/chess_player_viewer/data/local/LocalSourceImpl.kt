@@ -1,13 +1,29 @@
 package org.example.chess_player_viewer.data.local
 
+import kotlinx.serialization.json.Json
 import org.example.chess_player_viewer.ChessPlayerDB
 import org.example.chess_player_viewer.data.local.entity.ProfileEntity
+import org.example.chess_player_viewer.data.local.entity.StreamingPlatformEntity
 
 class LocalSourceImpl(private val database: ChessPlayerDB) : LocalSource {
-    override fun getAllRecentlyViewedPlayer(): List<ProfileEntity> {
+    override fun getAllRecentlyViewedProfiles(): List<ProfileEntity> {
         return database.recentlyViewedProfilesQueries.selectLatest15().executeAsList().map {
+            val platform: List<StreamingPlatformEntity> =
+                if (it.streamingPlatformsJson?.isNotBlank() == true) Json.decodeFromString(it.streamingPlatformsJson) else listOf()
             ProfileEntity(
-                avatar = it.avatar
+                playerId = it.playerId,
+                avatar = it.avatar,
+                name = it.name,
+                username = it.username,
+                title = it.title,
+                followers = it.followers,
+                country = it.country,
+                location = it.location,
+                lastOnline = it.lastOnline,
+                joined = it.joined,
+                isStreamer = it.isStreamer,
+                league = it.league,
+                streamingPlatforms = platform,
             )
         }
     }

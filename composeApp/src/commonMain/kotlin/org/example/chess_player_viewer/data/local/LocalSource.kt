@@ -4,7 +4,7 @@ import org.example.chess_player_viewer.data.local.entity.ProfileEntity
 
 interface LocalSource {
 
-    fun getAllRecentlyViewedPlayer(): List<ProfileEntity>
+    fun getAllRecentlyViewedProfiles(): List<ProfileEntity>
 
     fun insertRecentlyViewedPlayer(
         playerId: Long,

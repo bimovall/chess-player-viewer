@@ -9,4 +9,6 @@ interface ProfileRepository {
     fun getProfile(username: String): Flow<Result<Profile>>
 
     fun getPlayerStats(username: String): Flow<Result<PlayerStats>>
+
+    fun getRecentlyViewedProfiles(count: Int): Flow<Result<List<Profile>>>
 }

@@ -6,11 +6,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
 import org.example.chess_player_viewer.data.local.LocalSource
+import org.example.chess_player_viewer.data.local.entity.ProfileEntity
 import org.example.chess_player_viewer.data.remote.RemoteSource
 import org.example.chess_player_viewer.domain.model.PlayerStats
 import org.example.chess_player_viewer.domain.model.Profile
 import org.example.chess_player_viewer.domain.model.mapToPlayerStats
 import org.example.chess_player_viewer.domain.model.mapToProfile
+import org.example.chess_player_viewer.domain.model.mapToProfileEntity
 import org.example.chess_player_viewer.domain.repository.ProfileRepository
 import org.example.chess_player_viewer.utils.Result
 import org.example.chess_player_viewer.utils.mapSuccess
@@ -30,7 +32,7 @@ class ProfileRepositoryImpl(
 
             if (result is Result.Success) {
                 val profile = result.data
-                insertProfileToRecentlyViewed(profile)
+                insertProfileToRecentlyViewed(profile.mapToProfileEntity())
             }
 
             emit(result)
@@ -45,20 +47,29 @@ class ProfileRepositoryImpl(
         }
     }
 
-    private fun insertProfileToRecentlyViewed(profile: Profile) {
+    override fun getRecentlyViewedProfiles(count: Int): Flow<Result<List<Profile>>> {
+        return flow {
+            emit(Result.Success(localSource.getAllRecentlyViewedProfiles().map { entity ->
+                entity.mapToProfile()
+            }))
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    private fun insertProfileToRecentlyViewed(profile: ProfileEntity) {
         localSource.insertRecentlyViewedPlayer(
-            playerId = profile.playerId,
-            username = profile.username,
-            name = profile.name,
-            title = profile.title,
-            avatar = profile.avatar,
-            followers = profile.followers.toLong(),
-            country = profile.country,
-            lastOnline = profile.lastOnline,
-            joined = profile.joined,
-            location = profile.location,
-            league = profile.league,
-            isStreamer = profile.isStreamer,
+            playerId = profile.playerId ?: 0L,
+            username = profile.username.orEmpty(),
+            name = profile.name.orEmpty(),
+            title = profile.title.orEmpty(),
+            avatar = profile.avatar.orEmpty(),
+            followers = profile.followers ?: 0L,
+            country = profile.country.orEmpty(),
+            lastOnline = profile.lastOnline ?: 0L,
+            joined = profile.joined ?: 0L,
+            location = profile.location.orEmpty(),
+            league = profile.league.orEmpty(),
+            isStreamer = profile.isStreamer ?: false,
             streamingPlatformsJson = if (profile.streamingPlatforms.isNotEmpty()) Json.encodeToString(
                 profile.streamingPlatforms
             ) else "",

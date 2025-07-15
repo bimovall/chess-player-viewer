@@ -107,12 +107,13 @@ fun App() {
                         onClickLeaderboard = {
                             navHostController.navigate(LeaderboardRoute)
                         },
-                        onClickTitledPlayer = {
+                        onClickFavoritePlayer = {
 
                         },
                         onClickStreamer = {
                             navHostController.navigate(StreamerRoute)
-                        }
+                        },
+                        modifier = Modifier.padding(8.dp)
                     )
                 }
                 composable<LeaderboardRoute> {

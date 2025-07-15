@@ -13,7 +13,7 @@ data class ProfileDto(
     @SerialName("name") var name: String? = null,
     @SerialName("username") var username: String? = null,
     @SerialName("title") var title: String? = null,
-    @SerialName("followers") var followers: Int? = null,
+    @SerialName("followers") var followers: Long? = null,
     @SerialName("country") var country: String? = null,
     @SerialName("location") var location: String? = null,
     @SerialName("last_online") var lastOnline: Long? = null,
