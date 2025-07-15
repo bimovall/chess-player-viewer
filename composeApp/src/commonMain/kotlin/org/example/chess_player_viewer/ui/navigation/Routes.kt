@@ -15,6 +15,9 @@ data class ProfileRoute(val username: String)
 @Serializable
 object StreamerRoute
 
+@Serializable
+object FavoritePlayerRoute
+
 fun String?.matchesRoute(routeClass: KClass<*>): Boolean {
     val prefix = routeClass.qualifiedName
     return this != null && prefix != null && this.startsWith(prefix)
