@@ -1,0 +1,24 @@
+CREATE TABLE favorite_player (
+    playerId INTEGER NOT NULL PRIMARY KEY,
+    username TEXT UNIQUE,
+    name TEXT,
+    title TEXT,
+    avatar TEXT
+);
+
+insertFavoritePlayer:
+INSERT OR REPLACE INTO favorite_player (
+    playerId, username, name, title, avatar
+) VALUES (?, ?, ?, ?, ?);
+
+deleteFavoritePlayer:
+DELETE FROM favorite_player WHERE playerId = ?;
+
+selectAllFavoritePlayer:
+SELECT * FROM favorite_player;
+
+selectFavoritePlayerByPlayerId:
+SELECT * FROM favorite_player WHERE playerId = ?;
+
+lastInsertId:
+SELECT last_insert_rowid();

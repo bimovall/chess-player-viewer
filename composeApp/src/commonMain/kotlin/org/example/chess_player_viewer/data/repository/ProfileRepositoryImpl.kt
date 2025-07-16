@@ -6,10 +6,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.Json
 import org.example.chess_player_viewer.data.local.LocalSource
+import org.example.chess_player_viewer.data.local.entity.FavoritePlayerEntity
 import org.example.chess_player_viewer.data.local.entity.ProfileEntity
 import org.example.chess_player_viewer.data.remote.RemoteSource
+import org.example.chess_player_viewer.domain.model.FavoritePlayer
 import org.example.chess_player_viewer.domain.model.PlayerStats
 import org.example.chess_player_viewer.domain.model.Profile
+import org.example.chess_player_viewer.domain.model.mapToFavoritePlayer
 import org.example.chess_player_viewer.domain.model.mapToPlayerStats
 import org.example.chess_player_viewer.domain.model.mapToProfile
 import org.example.chess_player_viewer.domain.model.mapToProfileEntity
@@ -49,9 +52,35 @@ class ProfileRepositoryImpl(
 
     override fun getRecentlyViewedProfiles(count: Int): Flow<Result<List<Profile>>> {
         return flow {
-            emit(Result.Success(localSource.getAllRecentlyViewedProfiles().map { entity ->
-                entity.mapToProfile()
-            }))
+            emit(localSource.getAllRecentlyViewedProfiles().mapSuccess { entity ->
+                entity.map { it.mapToProfile() }
+            })
+        }
+    }
+
+    override fun getAllFavoritePlayers(): Flow<Result<List<FavoritePlayer>>> {
+        return flow {
+            emit(
+                localSource.getAllFavoritePlayer().mapSuccess { entity ->
+                    entity.map { it.mapToFavoritePlayer() }
+                }
+            )
+        }
+    }
+
+    override fun getFavoritePlayerByPlayerId(playerId: Long): Flow<Result<FavoritePlayer>> {
+        return flow {
+            emit(
+                localSource.getFavoritePlayerByPlayerId(playerId).mapSuccess {
+                    it.mapToFavoritePlayer()
+                }
+            )
+        }
+    }
+
+    override fun insertFavoritePlayer(player: FavoritePlayerEntity): Flow<Result<Long>> {
+        return flow {
+            emit(localSource.insertFavoritePlayer(player))
         }
     }
 

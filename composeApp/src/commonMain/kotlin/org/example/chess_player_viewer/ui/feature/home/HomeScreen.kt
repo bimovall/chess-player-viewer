@@ -53,6 +53,7 @@ fun HomeScreen(
     onClickFavoritePlayer: () -> Unit,
     onClickLeaderboard: () -> Unit,
     onClickStreamer: () -> Unit,
+    onClickToProfile: (username: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -94,7 +95,7 @@ fun HomeScreen(
             }
 
             is HomeUiState.Success -> {
-                RecentlyViewedContent((uiState.value as HomeUiState.Success).profiles)
+                RecentlyViewedContent((uiState.value as HomeUiState.Success).profiles, onClickToProfile)
             }
         }
 
@@ -103,10 +104,12 @@ fun HomeScreen(
 }
 
 @Composable
-fun RecentlyViewedContent(profiles: List<Profile>) {
+fun RecentlyViewedContent(profiles: List<Profile>, onClickToProfile: (username: String) -> Unit) {
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(profiles) {
-            PlayerCard(avatar = it.avatar, title = it.title, name = it.username)
+            PlayerCard(avatar = it.avatar, title = it.title, name = it.username, onClick = {
+                onClickToProfile(it.username)
+            })
         }
     }
 }

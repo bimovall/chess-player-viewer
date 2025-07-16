@@ -1,5 +1,6 @@
 package org.example.chess_player_viewer.di
 
+import org.example.chess_player_viewer.ui.feature.favorite_player.FavoritePlayerViewModel
 import org.example.chess_player_viewer.ui.feature.home.HomeViewModel
 import org.example.chess_player_viewer.ui.feature.leaderboard.LeaderboardViewModel
 import org.example.chess_player_viewer.ui.feature.profile.ProfileViewModel
@@ -13,4 +14,5 @@ val viewModelModule = module {
     viewModelOf(::ProfileViewModel)
     viewModelOf(::StreamerViewModel)
     viewModelOf(::HomeViewModel)
+    viewModelOf(::FavoritePlayerViewModel)
 }

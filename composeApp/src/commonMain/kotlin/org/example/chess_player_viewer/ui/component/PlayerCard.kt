@@ -17,12 +17,13 @@ import androidx.compose.ui.unit.dp
 import org.example.chess_player_viewer.ui.style.Color.BorderItemColor
 
 @Composable
-fun PlayerCard(avatar: String, title: String, name: String, modifier: Modifier = Modifier) {
+fun PlayerCard(avatar: String, title: String, name: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Card(
         border = BorderStroke(1.dp, BorderItemColor),
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
         ),
+        onClick = onClick,
         modifier = modifier.fillMaxWidth()
     ) {
         Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {

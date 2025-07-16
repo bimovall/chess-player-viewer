@@ -1,10 +1,13 @@
 package org.example.chess_player_viewer.data.local
 
+import org.example.chess_player_viewer.data.local.entity.FavoritePlayerEntity
 import org.example.chess_player_viewer.data.local.entity.ProfileEntity
+import org.example.chess_player_viewer.domain.model.FavoritePlayer
+import org.example.chess_player_viewer.utils.Result
 
 interface LocalSource {
 
-    fun getAllRecentlyViewedProfiles(): List<ProfileEntity>
+    fun getAllRecentlyViewedProfiles(): Result<List<ProfileEntity>>
 
     fun insertRecentlyViewedPlayer(
         playerId: Long,
@@ -22,4 +25,10 @@ interface LocalSource {
         streamingPlatformsJson: String,
         lastViewedTimestamp: Long,
     )
+
+    fun getAllFavoritePlayer(): Result<List<FavoritePlayerEntity>>
+
+    fun getFavoritePlayerByPlayerId(playerId: Long): Result<FavoritePlayerEntity>
+
+    fun insertFavoritePlayer(player: FavoritePlayerEntity): Result<Long>
 }

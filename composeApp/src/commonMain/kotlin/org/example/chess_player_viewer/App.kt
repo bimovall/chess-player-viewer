@@ -105,6 +105,9 @@ fun App() {
                         onClickStreamer = {
                             navHostController.navigate(StreamerRoute)
                         },
+                        onClickToProfile = {
+                            navHostController.navigate(ProfileRoute(it))
+                        },
                         modifier = Modifier.padding(8.dp)
                     )
                 }
@@ -145,6 +148,9 @@ fun App() {
 
                 composable<FavoritePlayerRoute> {
                     FavoritePlayerScreen(
+                        onRedirectToProfile = {
+                            navHostController.navigate(ProfileRoute(it))
+                        },
                         modifier = Modifier.padding(8.dp)
                     )
                 }
