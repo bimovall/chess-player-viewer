@@ -53,6 +53,7 @@ import org.example.chess_player_viewer.domain.model.Profile
 import org.example.chess_player_viewer.ui.component.Avatar
 import org.example.chess_player_viewer.ui.component.BadgeItem
 import org.example.chess_player_viewer.utils.DateUtils
+import org.example.chess_player_viewer.utils.ErrorHandler
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -63,6 +64,8 @@ fun ProfileScreen(
     onCollapsedFractionChanged: (Float) -> Unit,
     onNameAdded: (String) -> Unit,
     onAvatarAdded: (String) -> Unit,
+    onFavoriteState: (FavoriteState) -> Unit,
+    onFavoriteCallback: (callback: () -> Unit) -> Unit
 ) {
     val listState = rememberLazyListState()
     var headerHeightPx by remember { mutableStateOf(0f) }
@@ -82,15 +85,41 @@ fun ProfileScreen(
 
     LaunchedEffect(Unit) {
         viewModel.getProfile(username)
+        viewModel.isFavoritePlayer(username)
+    }
+
+    LaunchedEffect(uiState.value.favoriteState) {
+        onFavoriteState(uiState.value.favoriteState)
+    }
+
+    LaunchedEffect(Unit) {
+        onFavoriteCallback {
+            when (val state = uiState.value.favoriteState) {
+                is FavoriteState.Error -> {
+
+                }
+                is FavoriteState.Loading -> {
+
+                }
+                is FavoriteState.Success -> {
+                    if (state.isDataAvailable) {
+                        viewModel.removeFavorite()
+                    } else {
+                        viewModel.addFavorite()
+                    }
+                }
+            }
+        }
+
+
     }
 
     LaunchedEffect(collapseFraction) {
         onCollapsedFractionChanged(collapseFraction)
     }
 
-    when (val state = uiState.value) {
-
-        is ProfileUiState.Loading -> {
+    when (val state = uiState.value.profileState) {
+        is ProfileStatusState.Loading -> {
             Box(modifier = Modifier.fillMaxSize()) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center)
@@ -98,7 +127,7 @@ fun ProfileScreen(
             }
         }
 
-        is ProfileUiState.Success -> {
+        is ProfileStatusState.Success -> {
 
             LaunchedEffect(state) {
                 onNameAdded(state.profile.name)
@@ -140,11 +169,11 @@ fun ProfileScreen(
             }
         }
 
-        is ProfileUiState.PlayerStatsError -> {
+        is ProfileStatusState.PlayerStatsError -> {
 
         }
 
-        is ProfileUiState.ProfileError -> {
+        is ProfileStatusState.ProfileError -> {
 
         }
     }

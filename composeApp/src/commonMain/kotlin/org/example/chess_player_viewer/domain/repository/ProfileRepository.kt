@@ -16,7 +16,9 @@ interface ProfileRepository {
 
     fun getAllFavoritePlayers(): Flow<Result<List<FavoritePlayer>>>
 
-    fun getFavoritePlayerByPlayerId(playerId: Long): Flow<Result<FavoritePlayer>>
+    fun getFavoritePlayerByPlayerId(username: String): Flow<Result<FavoritePlayer?>>
 
     fun insertFavoritePlayer(player: FavoritePlayerEntity): Flow<Result<Long>>
+
+    fun deleteFavoritePlayer(username: String): Flow<Result<Boolean>>
 }

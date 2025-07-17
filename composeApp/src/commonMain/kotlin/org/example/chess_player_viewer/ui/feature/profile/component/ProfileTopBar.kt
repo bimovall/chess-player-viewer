@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,7 +19,10 @@ import androidx.compose.ui.unit.dp
 import chessplayerviewer.composeapp.generated.resources.Res
 import chessplayerviewer.composeapp.generated.resources.ic_add_favorite
 import chessplayerviewer.composeapp.generated.resources.ic_arrow_left
+import chessplayerviewer.composeapp.generated.resources.ic_favorite
 import org.example.chess_player_viewer.ui.component.Avatar
+import org.example.chess_player_viewer.ui.feature.profile.FavoriteState
+import org.example.chess_player_viewer.utils.ErrorHandler
 import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,6 +32,8 @@ fun ProfileTopAppBar(
     avatar: String,
     name: String,
     onBackPressed: () -> Unit,
+    favoriteState: FavoriteState,
+    onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -67,14 +73,31 @@ fun ProfileTopAppBar(
             }
         },
         actions = {
-            IconButton(onClick = { /* Settings */ }) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_add_favorite),
-                    contentDescription = "Settings"
-                )
+            when (favoriteState) {
+                is FavoriteState.Error -> {
+                    ToggleFavoriteButton(isVisible = false, isFavorite = false, onClick = onToggleFavorite)
+                }
+                is FavoriteState.Loading -> {
+                    CircularProgressIndicator()
+                }
+                is FavoriteState.Success -> {
+                    ToggleFavoriteButton(isVisible = true, isFavorite = favoriteState.isDataAvailable, onClick = onToggleFavorite)
+                }
             }
+
         },
         modifier = modifier
     )
+}
 
+@Composable
+fun ToggleFavoriteButton(isVisible: Boolean, isFavorite: Boolean, onClick: () -> Unit) {
+    if (!isVisible) return
+
+    IconButton(onClick = onClick) {
+        Icon(
+            painter = painterResource(if (isFavorite) Res.drawable.ic_favorite else Res.drawable.ic_add_favorite),
+            contentDescription = "Settings"
+        )
+    }
 }

@@ -85,7 +85,6 @@ fun HomeScreen(
         when (uiState.value) {
             is HomeUiState.Error -> {
                 //TODO add error state
-                println("Check recently viewed error : ${(uiState.value as HomeUiState.Error).error}")
             }
 
             is HomeUiState.Loading -> {

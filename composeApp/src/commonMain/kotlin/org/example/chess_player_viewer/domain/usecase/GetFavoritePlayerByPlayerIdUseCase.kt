@@ -7,7 +7,7 @@ import org.example.chess_player_viewer.utils.Result
 
 class GetFavoritePlayerByPlayerIdUseCase(private val repository: ProfileRepository) {
 
-    operator fun invoke(playerId: Long): Flow<Result<FavoritePlayer>> {
-        return repository.getFavoritePlayerByPlayerId(playerId)
+    operator fun invoke(username: String): Flow<Result<FavoritePlayer?>> {
+        return repository.getFavoritePlayerByPlayerId(username)
     }
 }

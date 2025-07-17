@@ -28,7 +28,9 @@ interface LocalSource {
 
     fun getAllFavoritePlayer(): Result<List<FavoritePlayerEntity>>
 
-    fun getFavoritePlayerByPlayerId(playerId: Long): Result<FavoritePlayerEntity>
+    fun getFavoritePlayerByUsername(username: String): Result<FavoritePlayerEntity?>
 
     fun insertFavoritePlayer(player: FavoritePlayerEntity): Result<Long>
+
+    fun deleteFavoritePlayer(username: String): Result<Boolean>
 }

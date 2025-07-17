@@ -68,11 +68,11 @@ class ProfileRepositoryImpl(
         }
     }
 
-    override fun getFavoritePlayerByPlayerId(playerId: Long): Flow<Result<FavoritePlayer>> {
+    override fun getFavoritePlayerByPlayerId(username: String): Flow<Result<FavoritePlayer?>> {
         return flow {
             emit(
-                localSource.getFavoritePlayerByPlayerId(playerId).mapSuccess {
-                    it.mapToFavoritePlayer()
+                localSource.getFavoritePlayerByUsername(username).mapSuccess {
+                    it?.mapToFavoritePlayer()
                 }
             )
         }
@@ -81,6 +81,12 @@ class ProfileRepositoryImpl(
     override fun insertFavoritePlayer(player: FavoritePlayerEntity): Flow<Result<Long>> {
         return flow {
             emit(localSource.insertFavoritePlayer(player))
+        }
+    }
+
+    override fun deleteFavoritePlayer(username: String): Flow<Result<Boolean>> {
+        return flow {
+            emit(localSource.deleteFavoritePlayer(username))
         }
     }
 

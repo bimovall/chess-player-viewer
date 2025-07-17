@@ -21,6 +21,7 @@ import org.example.chess_player_viewer.ui.component.DefaultAppBar
 import org.example.chess_player_viewer.ui.feature.favorite_player.FavoritePlayerScreen
 import org.example.chess_player_viewer.ui.feature.home.HomeScreen
 import org.example.chess_player_viewer.ui.feature.leaderboard.LeaderboardScreen
+import org.example.chess_player_viewer.ui.feature.profile.FavoriteState
 import org.example.chess_player_viewer.ui.feature.profile.ProfileScreen
 import org.example.chess_player_viewer.ui.feature.profile.component.ProfileTopAppBar
 import org.example.chess_player_viewer.ui.feature.streamer.StreamerScreen
@@ -51,6 +52,11 @@ fun App() {
         var avatar by remember {
             mutableStateOf("")
         }
+        var favoriteState by remember {
+            mutableStateOf<FavoriteState>(FavoriteState.Loading)
+        }
+
+        var onToggleFavorite by remember { mutableStateOf({}) }
 
         Scaffold(
             modifier = Modifier
@@ -64,7 +70,9 @@ fun App() {
                             avatar = avatar,
                             onBackPressed = {
                                 navHostController.popBackStack()
-                            }
+                            },
+                            favoriteState = favoriteState,
+                            onToggleFavorite = onToggleFavorite
                         )
                     }
 
@@ -133,6 +141,12 @@ fun App() {
                         },
                         onNameAdded = {
                             name = it
+                        },
+                        onFavoriteState = {
+                            favoriteState = it
+                        },
+                        onFavoriteCallback = { callback ->
+                            onToggleFavorite = callback
                         }
                     )
                 }

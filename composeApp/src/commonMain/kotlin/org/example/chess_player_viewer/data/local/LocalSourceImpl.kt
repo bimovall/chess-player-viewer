@@ -89,10 +89,10 @@ class LocalSourceImpl(private val database: ChessPlayerDB) : LocalSource {
         }
     }
 
-    override fun getFavoritePlayerByPlayerId(playerId: Long): Result<FavoritePlayerEntity> {
+    override fun getFavoritePlayerByUsername(username: String): Result<FavoritePlayerEntity?> {
 
         return try {
-            val player = database.favoritePlayerQueries.selectFavoritePlayerByPlayerId(playerId)
+            val player = database.favoritePlayerQueries.selectFavoritePlayerByUsername(username)
                 .executeAsOneOrNull()
             if (player != null) {
                 Result.Success(
@@ -105,7 +105,7 @@ class LocalSourceImpl(private val database: ChessPlayerDB) : LocalSource {
                     )
                 )
             } else {
-                Result.Error(ErrorHandler.NotFound("Data is not found"))
+                Result.Success(data = null)
             }
         } catch (e: Exception) {
             Result.Error(ErrorHandler.UnknownError(e.message.orEmpty()))
@@ -132,5 +132,20 @@ class LocalSourceImpl(private val database: ChessPlayerDB) : LocalSource {
             Result.Error(ErrorHandler.UnknownError(e.message.orEmpty()))
         }
 
+    }
+
+    override fun deleteFavoritePlayer(username: String): Result<Boolean> {
+        return try {
+            database.favoritePlayerQueries.deleteFavoritePlayer(username)
+            val result = database.favoritePlayerQueries.selectFavoritePlayerByUsername(username)
+                .executeAsOneOrNull()
+            if (result == null) {
+                Result.Success(true)
+            } else {
+                Result.Success(false)
+            }
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.UnknownError(e.message.orEmpty()))
+        }
     }
 }

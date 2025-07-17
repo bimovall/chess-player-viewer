@@ -1,5 +1,6 @@
 package org.example.chess_player_viewer.di
 
+import org.example.chess_player_viewer.domain.usecase.DeleteFavoritePlayerUseCase
 import org.example.chess_player_viewer.domain.usecase.GetAllFavoritePlayerUseCase
 import org.example.chess_player_viewer.domain.usecase.GetFavoritePlayerByPlayerIdUseCase
 import org.example.chess_player_viewer.domain.usecase.GetLeaderboardUseCase
@@ -26,4 +27,6 @@ val provideDomainModule = module {
     factoryOf(::GetFavoritePlayerByPlayerIdUseCase)
 
     factoryOf(::InsertFavoritePlayer)
+
+    factoryOf(::DeleteFavoritePlayerUseCase)
 }

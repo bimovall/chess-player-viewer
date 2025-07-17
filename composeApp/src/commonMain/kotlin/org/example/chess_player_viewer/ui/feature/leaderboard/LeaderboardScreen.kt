@@ -132,7 +132,6 @@ private fun SuccessContent(
     LaunchedEffect(error) {
         if (error != null) {
             //TODO show snackbar or toast
-            println("show error snackbar")
         }
     }
 

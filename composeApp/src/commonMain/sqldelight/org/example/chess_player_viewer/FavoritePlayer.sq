@@ -12,13 +12,13 @@ INSERT OR REPLACE INTO favorite_player (
 ) VALUES (?, ?, ?, ?, ?);
 
 deleteFavoritePlayer:
-DELETE FROM favorite_player WHERE playerId = ?;
+DELETE FROM favorite_player WHERE username = ?;
 
 selectAllFavoritePlayer:
 SELECT * FROM favorite_player;
 
-selectFavoritePlayerByPlayerId:
-SELECT * FROM favorite_player WHERE playerId = ?;
+selectFavoritePlayerByUsername:
+SELECT * FROM favorite_player WHERE username = ?;
 
 lastInsertId:
 SELECT last_insert_rowid();
