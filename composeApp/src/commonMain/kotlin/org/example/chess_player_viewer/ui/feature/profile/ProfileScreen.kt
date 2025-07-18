@@ -46,6 +46,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import chessplayerviewer.composeapp.generated.resources.Res
 import chessplayerviewer.composeapp.generated.resources.ic_location
 import chessplayerviewer.composeapp.generated.resources.ic_selected
+import chessplayerviewer.composeapp.generated.resources.ic_twitch
+import chessplayerviewer.composeapp.generated.resources.ic_youtube
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format.MonthNames
 import org.example.chess_player_viewer.domain.model.PlayerStats
@@ -54,6 +56,7 @@ import org.example.chess_player_viewer.ui.component.Avatar
 import org.example.chess_player_viewer.ui.component.BadgeItem
 import org.example.chess_player_viewer.utils.DateUtils
 import org.example.chess_player_viewer.utils.ErrorHandler
+import org.example.chess_player_viewer.utils.StreamType
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -239,13 +242,15 @@ fun StreamingPlatform(profile: Profile, onClick: (String) -> Unit, modifier: Mod
 
     Column(modifier = modifier.wrapContentHeight()) {
         Text("Streaming Platform", style = MaterialTheme.typography.bodyMedium)
+
         FlowRow(
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             repeat(profile.streamingPlatforms.size) { i ->
                 val platform = profile.streamingPlatforms[i]
+                val streamType = StreamType.fromString(platform.type)
                 Box(
                     modifier = Modifier
                         .background(Color.White)
@@ -259,9 +264,14 @@ fun StreamingPlatform(profile: Profile, onClick: (String) -> Unit, modifier: Mod
                 ) {
 
                     Icon(
-                        painter = painterResource(Res.drawable.ic_selected),
+                        painter = painterResource(when (streamType) { // Use the enum instance directly in when
+                            StreamType.TWITCH -> Res.drawable.ic_twitch
+                            StreamType.YOUTUBE -> Res.drawable.ic_youtube
+                            StreamType.UNKNOWN -> Res.drawable.ic_location // Handle unknown types
+                        }),
                         "",
-                        modifier = Modifier.padding(36.dp)
+                        modifier = Modifier.padding(36.dp).size(24.dp),
+                        tint = Color.Unspecified
                     )
                 }
             }
