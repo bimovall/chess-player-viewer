@@ -1,14 +1,63 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# Chess Player Viewer
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+## Description
+This is my playground for researching or implementing new features in Kotlin Multiplatform. The app is designed for showing chess players and allowing you to save your favourite players. 
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+## Architecture
+![image of architecture](/screenshot/Architecture.png)
+
+Data Layer: responsible for handling all data-related operations. It consists of a RemoteSource for fetching data from APIs, a LocalSource for accessing local storage such as databases or preferences, and a Repository implementation that combines both sources and provides a consistent interface to the domain layer.
+
+Domain Layer: contains the core business logic of the application. It includes UseCases, each representing a single unit of work, such as fetching user data or updating a record. It also defines repository interfaces that the data layer must implement. 
+
+Presentation Layer: handles the user interface and state management. It includes ViewModels that manage UI state and interact with UseCases, and Compose-based UI components that observe state changes and render the appropriate UI
 
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## Structure
+This app implements Clean Architecture, but without separating the layers into different modules. You can see the folder structure below:
+
+````
+├── data
+│   ├── local
+│   │   ├── driver
+│   │   └── entity
+│   ├── remote
+│   │   └── dto
+│   ├── repository
+│   └── service
+├── di
+├── domain
+│   ├── model
+│   ├── repository
+│   └── usecase
+├── ui
+│   ├── component
+│   ├── feature
+│   │   ├── favorite_player
+│   │   ├── home
+│   │   │   └── component
+│   │   ├── leaderboard
+│   │   │   └── component
+│   │   ├── profile
+│   │   │   └── component
+│   │   └── streamer
+│   │       └── component
+│   ├── navigation
+│   └── style
+└── utils
+````
+
+## Libraries
+- Compose
+- Navigation Compose
+- Ktor
+- SQLDelight
+- Koin
+- Kotlinx DateTime
+
+## Future works
+I have many things that I want to implement, and this is the checklist for my future work in this repo.
+
+* Caching strategy
+* Migrate to MVI
+* Custom Animation
