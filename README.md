@@ -55,6 +55,9 @@ This app implements Clean Architecture, but without separating the layers into d
 - Koin
 - Kotlinx DateTime
 
+## Endpoint
+I use a public endpoint from Chess.com. You can see the documentation from this [link](https://www.chess.com/news/view/published-data-api)
+
 ## Future works
 I have many things that I want to implement, and this is the checklist for my future work in this repo.
 
