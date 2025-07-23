@@ -1,6 +1,5 @@
 package org.example.chess_player_viewer.ui.feature.profile
 
-import org.example.chess_player_viewer.domain.model.FavoritePlayer
 import org.example.chess_player_viewer.domain.model.PlayerStats
 import org.example.chess_player_viewer.domain.model.Profile
 import org.example.chess_player_viewer.utils.ErrorHandler
@@ -8,6 +7,7 @@ import org.example.chess_player_viewer.utils.ErrorHandler
 data class ProfileUiState(
     val profileState: ProfileStatusState = ProfileStatusState.Loading,
     val favoriteState: FavoriteState = FavoriteState.Loading,
+    val sideEffect: ProfileSideEffect = ProfileSideEffect.Init
 )
 
 sealed class ProfileStatusState {
@@ -21,4 +21,9 @@ sealed class FavoriteState {
     data object Loading : FavoriteState()
     data class Success(val isDataAvailable: Boolean) : FavoriteState()
     data class Error(val error: ErrorHandler) : FavoriteState()
+}
+
+sealed class ProfileSideEffect {
+    data class ShowToast(val message: String) : ProfileSideEffect()
+    data object Init : ProfileSideEffect()
 }

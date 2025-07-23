@@ -10,7 +10,6 @@ import org.example.chess_player_viewer.domain.usecase.DeleteFavoritePlayerUseCas
 import org.example.chess_player_viewer.domain.usecase.GetFavoritePlayerByPlayerIdUseCase
 import org.example.chess_player_viewer.domain.usecase.GetProfilePlayerStatsUseCase
 import org.example.chess_player_viewer.domain.usecase.InsertFavoritePlayer
-import org.example.chess_player_viewer.utils.ErrorHandler
 import org.example.chess_player_viewer.utils.Result
 
 class ProfileViewModel(
@@ -24,8 +23,18 @@ class ProfileViewModel(
     private var _uiState: MutableStateFlow<ProfileUiState> =
         MutableStateFlow(ProfileUiState())
     val uiState = _uiState.asStateFlow()
+    private var hasLoadData = false
+
+    fun clearSideEffect() {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(sideEffect = ProfileSideEffect.Init)
+            }
+        }
+    }
 
     fun getProfile(username: String) {
+        if (hasLoadData) return
         viewModelScope.launch {
             _uiState.update {
                 it.copy(profileState = ProfileStatusState.Loading)
@@ -34,10 +43,11 @@ class ProfileViewModel(
             getProfilePlayerStatsUseCase.invoke(username).collect { combined ->
                 val profileResult = combined.profile
                 val statsResult = combined.playerStats
-                _uiState.update {
-                    it.copy(
+                _uiState.update { currentState ->
+                    currentState.copy(
                         profileState = when {
                             profileResult is Result.Success && statsResult is Result.Success -> {
+                                hasLoadData = true
                                 ProfileStatusState.Success(
                                     profile = profileResult.data,
                                     stats = statsResult.data
@@ -45,6 +55,7 @@ class ProfileViewModel(
                             }
 
                             profileResult is Result.Success -> {
+                                hasLoadData = true
                                 ProfileStatusState.Success(
                                     profile = profileResult.data,
                                     stats = null
@@ -62,9 +73,19 @@ class ProfileViewModel(
                             else -> {
                                 ProfileStatusState.Loading
                             }
+                        },
+                        sideEffect = when {
+                            profileResult is Result.Error -> {
+                                ProfileSideEffect.ShowToast(profileResult.cause.message.orEmpty())
+                            }
+                            statsResult is Result.Error -> {
+                                ProfileSideEffect.ShowToast(statsResult.cause.message.orEmpty())
+                            }
+                            else -> {
+                                currentState.sideEffect
+                            }
                         }
                     )
-
                 }
             }
         }
@@ -73,12 +94,13 @@ class ProfileViewModel(
     fun isFavoritePlayer(username: String) {
         viewModelScope.launch {
             getFavoritePlayerByPlayerIdUseCase(username).collect { result ->
-                _uiState.update {state ->
+                _uiState.update { state ->
                     state.copy(
-                        favoriteState = when(result) {
+                        favoriteState = when (result) {
                             is Result.Error -> {
                                 FavoriteState.Error(result.cause)
                             }
+
                             is Result.Success -> {
                                 if (result.data != null) {
                                     FavoriteState.Success(true)
@@ -111,7 +133,7 @@ class ProfileViewModel(
             ).collect { result ->
                 _uiState.update {
                     it.copy(
-                        favoriteState = when(result) {
+                        favoriteState = when (result) {
                             is Result.Error -> FavoriteState.Error(result.cause)
                             is Result.Success -> FavoriteState.Success(true)
                         }
@@ -133,7 +155,7 @@ class ProfileViewModel(
             ).collect { result ->
                 _uiState.update {
                     it.copy(
-                        favoriteState = when(result) {
+                        favoriteState = when (result) {
                             is Result.Error -> FavoriteState.Error(result.cause)
                             is Result.Success -> FavoriteState.Success(false)
                         }

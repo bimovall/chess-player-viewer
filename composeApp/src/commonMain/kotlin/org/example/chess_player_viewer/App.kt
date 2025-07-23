@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,9 +60,12 @@ fun App() {
 
         var onToggleFavorite by remember { mutableStateOf({}) }
 
+        val snackbarHostState = remember { SnackbarHostState() }
+
         Scaffold(
             modifier = Modifier
                 .fillMaxSize(),
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             topBar = {
                 when {
                     currentRoute.matchesRoute(ProfileRoute::class) -> {
@@ -133,6 +138,7 @@ fun App() {
                     val route = backStackEntry.toRoute<ProfileRoute>()
                     ProfileScreen(
                         username = route.username,
+                        snackbarHostState = snackbarHostState,
                         onCollapsedFractionChanged = {
                             collapsedProfileFraction = it
                         },

@@ -24,6 +24,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -45,7 +46,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import chessplayerviewer.composeapp.generated.resources.Res
 import chessplayerviewer.composeapp.generated.resources.ic_location
-import chessplayerviewer.composeapp.generated.resources.ic_selected
 import chessplayerviewer.composeapp.generated.resources.ic_twitch
 import chessplayerviewer.composeapp.generated.resources.ic_youtube
 import kotlinx.datetime.LocalDateTime
@@ -55,7 +55,6 @@ import org.example.chess_player_viewer.domain.model.Profile
 import org.example.chess_player_viewer.ui.component.Avatar
 import org.example.chess_player_viewer.ui.component.BadgeItem
 import org.example.chess_player_viewer.utils.DateUtils
-import org.example.chess_player_viewer.utils.ErrorHandler
 import org.example.chess_player_viewer.utils.StreamType
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -64,6 +63,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ProfileScreen(
     viewModel: ProfileViewModel = koinViewModel(),
     username: String,
+    snackbarHostState: SnackbarHostState,
     onCollapsedFractionChanged: (Float) -> Unit,
     onNameAdded: (String) -> Unit,
     onAvatarAdded: (String) -> Unit,
@@ -86,9 +86,23 @@ fun ProfileScreen(
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
 
+
     LaunchedEffect(Unit) {
         viewModel.getProfile(username)
         viewModel.isFavoritePlayer(username)
+    }
+
+    LaunchedEffect(uiState.value.sideEffect) {
+        when (uiState.value.sideEffect) {
+            is ProfileSideEffect.Init -> {
+
+            }
+
+            is ProfileSideEffect.ShowToast -> {
+                snackbarHostState.showSnackbar((uiState.value.sideEffect as ProfileSideEffect.ShowToast).message)
+                viewModel.clearSideEffect()
+            }
+        }
     }
 
     LaunchedEffect(uiState.value.favoriteState) {
@@ -101,9 +115,11 @@ fun ProfileScreen(
                 is FavoriteState.Error -> {
 
                 }
+
                 is FavoriteState.Loading -> {
 
                 }
+
                 is FavoriteState.Success -> {
                     if (state.isDataAvailable) {
                         viewModel.removeFavorite()
@@ -208,7 +224,10 @@ fun Statistic(stats: PlayerStats?, modifier: Modifier = Modifier) {
 
                         }
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         Text(
                             record.name,
                             style = MaterialTheme.typography.bodySmall,
@@ -264,11 +283,13 @@ fun StreamingPlatform(profile: Profile, onClick: (String) -> Unit, modifier: Mod
                 ) {
 
                     Icon(
-                        painter = painterResource(when (streamType) { // Use the enum instance directly in when
-                            StreamType.TWITCH -> Res.drawable.ic_twitch
-                            StreamType.YOUTUBE -> Res.drawable.ic_youtube
-                            StreamType.UNKNOWN -> Res.drawable.ic_location // Handle unknown types
-                        }),
+                        painter = painterResource(
+                            when (streamType) { // Use the enum instance directly in when
+                                StreamType.TWITCH -> Res.drawable.ic_twitch
+                                StreamType.YOUTUBE -> Res.drawable.ic_youtube
+                                StreamType.UNKNOWN -> Res.drawable.ic_location // Handle unknown types
+                            }
+                        ),
                         "",
                         modifier = Modifier.padding(36.dp).size(24.dp),
                         tint = Color.Unspecified
