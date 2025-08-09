@@ -30,7 +30,7 @@ fun LeaderboardItem(
     number: Int,
     title: String,
     name: String,
-    rating: Int,
+    rating: Long,
     avatar: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier

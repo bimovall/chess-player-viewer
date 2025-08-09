@@ -3,8 +3,10 @@ package org.example.chess_player_viewer.data.local
 import kotlinx.serialization.json.Json
 import org.example.chess_player_viewer.ChessPlayerDB
 import org.example.chess_player_viewer.data.local.entity.FavoritePlayerEntity
+import org.example.chess_player_viewer.data.local.entity.LeaderboardEntity
 import org.example.chess_player_viewer.data.local.entity.ProfileEntity
 import org.example.chess_player_viewer.data.local.entity.StreamingPlatformEntity
+import org.example.chess_player_viewer.domain.model.Leaderboards
 import org.example.chess_player_viewer.utils.ErrorHandler
 import org.example.chess_player_viewer.utils.Result
 
@@ -146,6 +148,55 @@ class LocalSourceImpl(private val database: ChessPlayerDB) : LocalSource {
             }
         } catch (e: Exception) {
             Result.Error(ErrorHandler.UnknownError(e.message.orEmpty()))
+        }
+    }
+
+    override fun getLeaderboard(): Result<List<LeaderboardEntity>> {
+        return try {
+            val result = database.leaderboardQueries.selectAllLeaderboard()
+                .executeAsList()
+
+            Result.Success(result.map {
+                LeaderboardEntity(
+                    playerId = it.playerId ?: 0L,
+                    id = it.id.orEmpty(),
+                    username = it.username.orEmpty(),
+                    name = it.name.orEmpty(),
+                    title = it.title.orEmpty(),
+                    avatar = it.avatar.orEmpty(),
+                    score = it.score ?: 0L,
+                    rank = it.rank ?: 0L,
+                    url = it.url.orEmpty(),
+                    category = it.category.orEmpty()
+                )
+            })
+
+        } catch (e: Exception) {
+            Result.Error(ErrorHandler.UnknownError(e.message.orEmpty()))
+        }
+    }
+
+    override fun insertLeaderboard(leaderboards: List<LeaderboardEntity>) {
+        try {
+            database.leaderboardQueries.transaction {
+                leaderboards.forEach {
+                    database.leaderboardQueries.insertLeaderboard(
+                        playerId = it.playerId,
+                        id = it.id,
+                        username = it.username,
+                        name = it.name,
+                        title = it.title,
+                        avatar = it.avatar,
+                        score = it.score,
+                        rank = it.rank,
+                        url = it.url,
+                        category = it.category
+                    )
+                }
+            }
+
+        } catch (e: Exception) {
+
         }
     }
 }

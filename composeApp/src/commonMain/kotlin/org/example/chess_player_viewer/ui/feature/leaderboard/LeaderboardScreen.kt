@@ -151,7 +151,7 @@ private fun SuccessContent(
     ) {
         itemsIndexed(
             items = selectedItems,
-            key = { _, item -> item.id }
+            key = { _, item -> "${item.id}-${state.selectedFilter}" }
         ) { index, item ->
             LeaderboardItem(
                 index + 1,

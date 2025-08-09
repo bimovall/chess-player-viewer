@@ -1,0 +1,21 @@
+CREATE TABLE leaderboard (
+    playerId INTEGER,
+    id TEXT,
+    username TEXT,
+    name TEXT,
+    title TEXT,
+    avatar TEXT,
+    score INTEGER,
+    rank INTEGER,
+    url TEXT,
+    category TEXT,
+    PRIMARY KEY (playerId, category)
+);
+
+insertLeaderboard:
+INSERT OR REPLACE INTO leaderboard (
+    playerId, id, username, name, title, avatar, score, rank, url, category
+) VALUES (?, ?, ?, ?, ?, ?, ?,?,?, ?);
+
+selectAllLeaderboard:
+SELECT * FROM leaderboard ORDER BY category, rank ASC;

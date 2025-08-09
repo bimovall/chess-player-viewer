@@ -1,6 +1,7 @@
 package org.example.chess_player_viewer.data.local
 
 import org.example.chess_player_viewer.data.local.entity.FavoritePlayerEntity
+import org.example.chess_player_viewer.data.local.entity.LeaderboardEntity
 import org.example.chess_player_viewer.data.local.entity.ProfileEntity
 import org.example.chess_player_viewer.domain.model.FavoritePlayer
 import org.example.chess_player_viewer.utils.Result
@@ -33,4 +34,9 @@ interface LocalSource {
     fun insertFavoritePlayer(player: FavoritePlayerEntity): Result<Long>
 
     fun deleteFavoritePlayer(username: String): Result<Boolean>
+
+    fun getLeaderboard(): Result<List<LeaderboardEntity>>
+
+    fun insertLeaderboard(leaderboards: List<LeaderboardEntity>)
+
 }

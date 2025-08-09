@@ -5,12 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PlayerDto(
-    @SerialName("player_id") val playerId: Int,
+    @SerialName("player_id") val playerId: Long,
     @SerialName("@id") val id: String,
     val url: String,
     val username: String,
-    val score: Int,
-    val rank: Int,
+    val score: Long,
+    val rank: Long,
     val title: String? = null,
     val name: String? = null,
     val avatar: String

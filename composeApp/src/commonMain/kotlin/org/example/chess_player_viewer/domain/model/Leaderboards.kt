@@ -1,5 +1,6 @@
 package org.example.chess_player_viewer.domain.model
 
+import org.example.chess_player_viewer.data.local.entity.LeaderboardEntity
 import org.example.chess_player_viewer.data.remote.dto.PlayerDto
 import org.example.chess_player_viewer.domain.model.Leaderboards.Player
 
@@ -7,12 +8,12 @@ data class Leaderboards(
     val data: Map<String, List<Player>>
 ) {
     data class Player(
-        val playerId: Int,
+        val playerId: Long,
         val id: String,
         val url: String,
         val username: String,
-        val score: Int,
-        val rank: Int,
+        val score: Long,
+        val rank: Long,
         val name: String,
         val title: String,
         val avatar: String
@@ -31,8 +32,8 @@ fun mapToLeaderboards(map: Map<String, List<PlayerDto>>): Leaderboards {
     )
 }
 
-fun PlayerDto.mapToPlayer(): Leaderboards.Player {
-    return Leaderboards.Player(
+fun PlayerDto.mapToPlayer(): Player {
+    return Player(
         playerId = this.playerId,
         id = this.id,
         url = this.url,
@@ -42,6 +43,61 @@ fun PlayerDto.mapToPlayer(): Leaderboards.Player {
         title = this.title ?: "",
         name = this.name ?: "",
         avatar = this.avatar
+    )
+}
+
+fun mapToLeaderboard(list: List<LeaderboardEntity>): Leaderboards {
+    val result = hashMapOf<String, List<Player>>()
+
+    val groupedLeaderboard = list.groupBy {
+        it.category
+    }
+
+    for ((key, value) in groupedLeaderboard) {
+        result[key] = value.map { it.mapToPlayer() }
+    }
+
+    return Leaderboards(result)
+
+}
+
+fun LeaderboardEntity.mapToPlayer(): Player {
+    return Player(
+        playerId = this.playerId,
+        id = this.id,
+        url = this.url,
+        username = this.username,
+        score = this.score,
+        rank = this.rank,
+        title = this.title,
+        name = this.name,
+        avatar = this.avatar
+    )
+}
+
+fun mapToLeaderboardEntity(map: Map<String, List<PlayerDto>>): List<LeaderboardEntity> {
+    val list = arrayListOf<LeaderboardEntity>()
+    map.forEach {
+        val data = it.value.map { player ->
+            player.mapToLeaderboard(it.key)
+        }
+        list.addAll(data)
+    }
+    return list
+}
+
+fun PlayerDto.mapToLeaderboard(category: String): LeaderboardEntity {
+    return LeaderboardEntity(
+        playerId = this.playerId,
+        id = this.id,
+        url = this.url,
+        username = this.username,
+        score = this.score,
+        rank = this.rank,
+        title = this.title ?: "",
+        name = this.name ?: "",
+        avatar = this.avatar,
+        category = category
     )
 }
 
